@@ -1,0 +1,65 @@
+!pip install ipywidgets
+
+from ipywidgets import Button, HBox, Layout, Output, VBox
+
+class CalculatorApp:
+    def __init__(self):
+        # Output widget to display input and result
+        self.display_output = Output()
+        self.result_output = Output()
+
+        # Define buttons and their layout
+        button_layout = Layout(width='auto', height='auto')
+        button_texts = [
+            '7', '8', '9', '/',
+            '4', '5', '6', '*',
+            '1', '2', '3', '-',
+            '0', '.', '=', '+',
+            'C', '(', ')'
+        ]
+        self.buttons = [Button(description=text, layout=button_layout) for text in button_texts]
+
+        # Assign click event handler to buttons
+        for button in self.buttons:
+            button.on_click(self.button_click)
+
+        # Layout buttons in a grid
+        rows = [HBox(self.buttons[i:i+4]) for i in range(0, len(self.buttons), 4)]
+        grid = VBox(rows)
+
+        # Initialize equation and result
+        self.equation = ""
+        self.result = ""
+
+        # Display widgets
+        display_widget = VBox([grid, self.display_output, self.result_output])
+        display(display_widget)
+
+    def button_click(self, button):
+        char = button.description
+
+        # Update display with pressed number/operator
+        with self.display_output:
+            print(char, end="")
+
+        # Calculate result or clear equation
+        if char == "=":
+            try:
+                self.result = str(eval(self.equation))
+            except:
+                self.result = "Error"
+            finally:
+                # Display result
+                with self.result_output:
+                    print(self.result)
+                self.equation = ""
+        elif char == "C":
+            self.equation = ""
+        else:
+            self.equation += char
+
+def main():
+    app = CalculatorApp()
+
+if __name__ == "__main__":
+    main()
